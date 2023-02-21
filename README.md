@@ -1,3 +1,3 @@
 # argilac
 
-A polygon trading bot (MATIC <-> USDC)
+A polygon spot trading bot (MATIC <-> USDC)
