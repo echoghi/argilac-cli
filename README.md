@@ -2,4 +2,4 @@
 
 A polygon spot trading bot (MATIC <-> USDC)
 
-## 1. Start: `npm run trade`
+## Start: `npm run trade`
