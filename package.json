@@ -12,7 +12,9 @@
     "ethers": "5.6.2",
     "web3": "^1.8.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "chalk": "^5.2.0"
+  },
   "scripts": {
     "trade": "esno trade.ts"
   },
