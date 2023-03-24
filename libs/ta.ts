@@ -2,6 +2,7 @@ import Logger from './logger';
 
 const apiKey = process.env.POLYGON_API_KEY;
 
+// https://polygon.io/docs/crypto/get_v1_indicators_sma__cryptoticker
 export const getSMA = async (window: number) => {
   let data;
 
@@ -17,6 +18,7 @@ export const getSMA = async (window: number) => {
   return data?.results?.values.pop().value;
 };
 
+// https://polygon.io/docs/crypto/get_v1_indicators_rsi__cryptoticker
 export const getRSI = async (window: number) => {
   let data;
 
@@ -32,6 +34,7 @@ export const getRSI = async (window: number) => {
   return data?.results?.values.pop().value;
 };
 
+// https://polygon.io/docs/crypto/get_v1_indicators_ema__cryptoticker
 export const getMACD = async () => {
   let data;
 
