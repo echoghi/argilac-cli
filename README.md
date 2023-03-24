@@ -2,4 +2,4 @@
 
 Spot trading bot on the Polygon network
 
-## Start: `npm run trade`
+### Start: `yarn trade`
