@@ -1,15 +1,7 @@
 import { Token } from '@uniswap/sdk-core';
 import { FeeAmount } from '@uniswap/v3-sdk';
 
-import {
-  AAVE_TOKEN,
-  DAI_TOKEN,
-  MATIC_TOKEN,
-  USDC_TOKEN,
-  WBTC_TOKEN,
-  WETH_TOKEN,
-  WMATIC_TOKEN
-} from './libs/constants';
+import { USDC_TOKEN, WETH_TOKEN } from './libs/constants';
 
 require('dotenv').config();
 
@@ -24,10 +16,10 @@ export interface ExampleConfig {
     mainnet: string | undefined;
   };
   tokens: {
-    in: Token;
-    amountIn: number;
-    out: Token;
-    poolFee: number;
+    in: Token; // Token to buy and speculate on
+    amountIn: number; // Percentage of equity to use for trade
+    out: Token; // Token to hold in between trades
+    poolFee: number; // Gas fee for the trade
   };
 }
 
@@ -38,7 +30,7 @@ export const CurrentConfig: ExampleConfig = {
   },
   tokens: {
     in: USDC_TOKEN,
-    amountIn: 1,
+    amountIn: 10,
     out: WETH_TOKEN,
     poolFee: FeeAmount.MEDIUM
   }

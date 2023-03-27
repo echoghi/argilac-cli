@@ -1,5 +1,5 @@
 import { ERC20_ABI, USDC_TOKEN, WETH_TOKEN } from './constants';
-import { getLog, saveLog } from './log';
+import { getLog, saveLog, trackError } from './log';
 import Logger from './logger';
 import { walletAddress } from './provider';
 import { executeRoute, generateRoute } from './routing';
@@ -8,15 +8,13 @@ import { formatBalance, getTokenBalance, getTokenBalances } from './utils';
 export async function buy(price: string) {
   const usdcBalance = await getTokenBalance(walletAddress, USDC_TOKEN.address, ERC20_ABI);
   const formattedBalance = await formatBalance(usdcBalance, USDC_TOKEN.decimals);
-  const hasBalance = formattedBalance > 0.000000000000001;
+  const hasBalance = formattedBalance > 0;
   const log = getLog();
-
-  if (!hasBalance) {
-    Logger.error('Insufficient USDC balance');
-  }
 
   if (log.positionOpen) {
     Logger.error('Position already open, skipping buy order');
+  } else if (!hasBalance) {
+    Logger.error('Insufficient USDC balance');
   }
 
   const route = await generateRoute(USDC_TOKEN, WETH_TOKEN, 10);
@@ -40,7 +38,12 @@ export async function buy(price: string) {
       Logger.success('Buy order executed');
     } catch (e) {
       Logger.error('Buy order failed');
-      console.error(e);
+
+      trackError({
+        type: 'BUY',
+        message: e.message,
+        time: new Date().toLocaleString()
+      });
     }
   } else {
     Logger.error('Trade cancelled');

@@ -23,39 +23,47 @@ import {
 } from './constants';
 import { fromReadableAmount } from './utils';
 import { ethers } from 'ethers';
+import Logger from './logger';
 
 export async function generateRoute(
   tokenIn: Token,
   tokenOut: Token,
   amountIn: number
 ): Promise<SwapRoute | null> {
-  const router = new AlphaRouter({
-    chainId: ChainId.POLYGON_MUMBAI,
-    provider: getMainnetProvider()
-  });
+  let route;
 
-  const options: SwapOptionsSwapRouter02 = {
-    recipient: walletAddress,
-    slippageTolerance: new Percent(50, 10_000),
-    deadline: Math.floor(Date.now() / 1000 + 1800),
-    type: SwapType.SWAP_ROUTER_02
-  };
+  try {
+    const router = new AlphaRouter({
+      chainId: ChainId.POLYGON_MUMBAI,
+      provider: getMainnetProvider()
+    });
 
-  const route = await router.route(
-    CurrencyAmount.fromRawAmount(
-      tokenIn,
-      fromReadableAmount(amountIn, tokenIn.decimals).toString()
-    ),
-    tokenOut,
-    TradeType.EXACT_INPUT,
-    options
-  );
+    const options: SwapOptionsSwapRouter02 = {
+      recipient: walletAddress,
+      slippageTolerance: new Percent(50, 10_000),
+      deadline: Math.floor(Date.now() / 1000 + 1800),
+      type: SwapType.SWAP_ROUTER_02
+    };
+
+    route = await router.route(
+      CurrencyAmount.fromRawAmount(
+        tokenIn,
+        fromReadableAmount(amountIn, tokenIn.decimals).toString()
+      ),
+      tokenOut,
+      TradeType.EXACT_INPUT,
+      options
+    );
+  } catch (e) {
+    Logger.error('Failed to generate route for swap');
+  }
 
   return route;
 }
 
 export async function executeRoute(route: SwapRoute, tokenIn: Token): Promise<TransactionState> {
   const provider = getProvider();
+  let res;
 
   if (!walletAddress || !provider) {
     throw new Error('Cannot execute a trade without a connected wallet');
@@ -68,14 +76,18 @@ export async function executeRoute(route: SwapRoute, tokenIn: Token): Promise<Tr
     return TransactionState.Failed;
   }
 
-  const res = await sendTransaction({
-    data: route.methodParameters?.calldata,
-    to: V3_SWAP_ROUTER_ADDRESS,
-    value: route?.methodParameters?.value,
-    from: walletAddress,
-    maxFeePerGas: MAX_FEE_PER_GAS,
-    maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS
-  });
+  try {
+    res = await sendTransaction({
+      data: route.methodParameters?.calldata,
+      to: V3_SWAP_ROUTER_ADDRESS,
+      value: route?.methodParameters?.value,
+      from: walletAddress,
+      maxFeePerGas: MAX_FEE_PER_GAS,
+      maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS
+    });
+  } catch (e) {
+    Logger.error('Failed to execute route for swap');
+  }
 
   return res;
 }
@@ -101,7 +113,7 @@ export async function getTokenTransferApproval(token: Token): Promise<Transactio
       from: address
     });
   } catch (e) {
-    console.error(e);
+    Logger.error('Failed to get token approval for swap');
     return TransactionState.Failed;
   }
 }

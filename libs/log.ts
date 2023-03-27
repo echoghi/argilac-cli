@@ -12,6 +12,12 @@ interface Log {
   PNL?: number;
 }
 
+interface Error {
+  type: string;
+  message: string;
+  time: string;
+}
+
 export function getLog(): Log {
   let log;
 
@@ -31,6 +37,30 @@ export function saveLog(newLog: Log) {
 
     Logger.info('Updated state:');
     Logger.table(newLog);
+  } catch (e) {
+    Logger.error('Error saving log.json');
+  }
+}
+
+export function getErrorLog(): Error[] {
+  let errors = [];
+
+  try {
+    const logJSON = fs.readFileSync('./error-log.json', 'utf-8');
+    errors = JSON.parse(logJSON);
+  } catch (e) {
+    Logger.error('Error reading error-log.json');
+  }
+
+  return errors;
+}
+
+export function trackError(error: Error) {
+  try {
+    const errors = getErrorLog();
+    errors.push(error);
+
+    fs.writeFileSync(`./error-log.json`, JSON.stringify(errors, null, 2));
   } catch (e) {
     Logger.error('Error saving log.json');
   }

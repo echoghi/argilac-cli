@@ -30,7 +30,12 @@ export async function getTokenBalance(address, tokenAddress, abi) {
 }
 
 export async function formatBalance(balance, decimals) {
-  const formattedBalance = Number(ethers.utils.formatUnits(balance, decimals));
+  let formattedBalance = Number(ethers.utils.formatUnits(balance, decimals));
+
+  // Check if positive balance is just "dust"
+  if (formattedBalance <= 0.000000000000001) {
+    formattedBalance = 0;
+  }
 
   return formattedBalance;
 }
@@ -48,4 +53,10 @@ export async function getTokenBalances() {
     formattedUSDCBalance,
     formattedWETHBalance
   };
+}
+
+export function formatUSD(amount: number): string {
+  const formattedNumber = amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+
+  return formattedNumber;
 }
