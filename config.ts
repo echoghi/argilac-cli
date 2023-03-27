@@ -13,14 +13,11 @@ import {
 
 require('dotenv').config();
 
-// Sets if the example should run locally or on chain
 export enum Environment {
   LOCAL,
-  MAINNET,
-  WALLET_EXTENSION
+  MAINNET
 }
 
-// Inputs that configure this example to run
 export interface ExampleConfig {
   rpc: {
     testnet: string | undefined;
@@ -33,8 +30,6 @@ export interface ExampleConfig {
     poolFee: number;
   };
 }
-
-// Example Configuration
 
 export const CurrentConfig: ExampleConfig = {
   rpc: {
