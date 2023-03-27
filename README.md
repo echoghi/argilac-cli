@@ -1,4 +1,4 @@
-# argilac
+# ⚡️ argilac ⚡️
 
 Crypto trading bot that buys/sells spot based on alerts from TradingView
 
