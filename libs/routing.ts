@@ -6,7 +6,8 @@ import {
   SwapType
 } from '@uniswap/smart-order-router';
 import { TradeType, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
-import { CurrentConfig } from '../config';
+import { ethers } from 'ethers';
+
 import {
   getMainnetProvider,
   sendTransaction,
@@ -22,8 +23,8 @@ import {
   V3_SWAP_ROUTER_ADDRESS
 } from './constants';
 import { fromReadableAmount } from './utils';
-import { ethers } from 'ethers';
 import Logger from './logger';
+import { trackError } from './log';
 
 export async function generateRoute(
   tokenIn: Token,
@@ -56,6 +57,11 @@ export async function generateRoute(
     );
   } catch (e) {
     Logger.error('Failed to generate route for swap');
+
+    trackError({
+      type: 'GEN_ROUTE',
+      message: e.message
+    });
   }
 
   return route;
@@ -87,6 +93,11 @@ export async function executeRoute(route: SwapRoute, tokenIn: Token): Promise<Tr
     });
   } catch (e) {
     Logger.error('Failed to execute route for swap');
+
+    trackError({
+      type: 'EXEC_ROUTE',
+      message: e.message
+    });
   }
 
   return res;
@@ -114,6 +125,12 @@ export async function getTokenTransferApproval(token: Token): Promise<Transactio
     });
   } catch (e) {
     Logger.error('Failed to get token approval for swap');
+
+    trackError({
+      type: 'TOKEN_APPROVAL',
+      message: e.message
+    });
+
     return TransactionState.Failed;
   }
 }

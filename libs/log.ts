@@ -15,7 +15,7 @@ interface Log {
 interface Error {
   type: string;
   message: string;
-  time: string;
+  time?: string;
 }
 
 export function getLog(): Log {
@@ -58,7 +58,10 @@ export function getErrorLog(): Error[] {
 export function trackError(error: Error) {
   try {
     const errors = getErrorLog();
-    errors.push(error);
+    errors.push({
+      time: new Date().toLocaleString(),
+      ...error
+    });
 
     fs.writeFileSync(`./error-log.json`, JSON.stringify(errors, null, 2));
   } catch (e) {

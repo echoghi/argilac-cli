@@ -1,0 +1,31 @@
+//@version=5
+strategy("Bollinger Bands Buy/Sell", overlay=true, currency=currency.NONE, initial_capital = 3000, default_qty_type = strategy.percent_of_equity, default_qty_value = 100)
+
+// Bollinger Band Inputs
+length = input.int(34, "Length")
+mult = input.float(2.0, "Multiplier")
+
+// Bollinger Band calculations
+basis = ta.sma(close, length)
+dev = ta.stdev(close, length)
+dev2 = mult * dev
+upper_band = basis + dev2
+lower_band = basis - dev2
+
+// Long entry condition
+buy_entry = ta.crossover(close, upper_band)
+
+// Exit conditions
+buy_exit = ta.crossunder(close, basis)
+
+// Strategy entries and exits
+if (buy_entry)
+    strategy.entry("Buy", strategy.long)
+
+if (buy_exit)
+    strategy.close("Buy")
+
+// Plot Bollinger Bands
+plot(basis, color=color.new(color.yellow, 0), title="Basis")
+plot(upper_band, color=color.new(color.green, 0), title="Upper Band")
+plot(lower_band, color=color.new(color.red, 0), title="Lower Band")

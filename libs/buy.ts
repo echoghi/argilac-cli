@@ -41,8 +41,7 @@ export async function buy(price: string) {
 
       trackError({
         type: 'BUY',
-        message: e.message,
-        time: new Date().toLocaleString()
+        message: e.message
       });
     }
   } else {

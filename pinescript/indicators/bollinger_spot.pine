@@ -1,0 +1,32 @@
+//@version=5
+indicator("Bollinger Bands Buy/Sell", overlay=true)
+
+// Bollinger Band Inputs
+length = input.int(34, "Length")
+mult = input.float(2.0, "Multiplier")
+
+// Bollinger Band calculations
+basis = ta.sma(close, length)
+dev = ta.stdev(close, length)
+dev2 = mult * dev
+upper_band = basis + dev2
+lower_band = basis - dev2
+
+// Long entry condition
+buy_entry = ta.crossover(close, upper_band)
+
+// Exit conditions
+buy_exit = ta.crossunder(close, basis)
+
+// Separate Alerts for Entries and Exits
+alertcondition(buy_entry, title='Buy ▲', message='Buy ▲ | {{ticker}}@{{close}} | ({{interval}})')
+alertcondition(buy_exit, title='Sell ▼', message='Sell ▲ | {{ticker}}@{{close}} | ({{interval}})')
+
+// Plot Bollinger Bands
+plot(basis, color=color.new(color.yellow, 0), title="Basis")
+plot(upper_band, color=color.new(color.green, 0), title="Upper Band")
+plot(lower_band, color=color.new(color.red, 0), title="Lower Band")
+
+// Plot Trades
+plotshape(buy_entry, 'Buy', shape.labelup, location.belowbar, color=color.green, size=size.small, offset=0)
+plotshape(buy_exit, 'Sell', shape.labeldown, location.abovebar,color=color.red), size=size.small, offset=0)
