@@ -6,3 +6,4 @@ node_modules
 .vscode
 yarn.lock
 log.json
+error-log.json
