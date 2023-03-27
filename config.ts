@@ -1,7 +1,15 @@
 import { Token } from '@uniswap/sdk-core';
 import { FeeAmount } from '@uniswap/v3-sdk';
 
-import { MATIC_TOKEN, USDC_TOKEN, WETH_TOKEN } from './libs/constants';
+import {
+  AAVE_TOKEN,
+  DAI_TOKEN,
+  MATIC_TOKEN,
+  USDC_TOKEN,
+  WBTC_TOKEN,
+  WETH_TOKEN,
+  WMATIC_TOKEN
+} from './libs/constants';
 
 require('dotenv').config();
 
@@ -14,7 +22,6 @@ export enum Environment {
 
 // Inputs that configure this example to run
 export interface ExampleConfig {
-  env: Environment;
   rpc: {
     testnet: string | undefined;
     mainnet: string | undefined;
@@ -30,14 +37,13 @@ export interface ExampleConfig {
 // Example Configuration
 
 export const CurrentConfig: ExampleConfig = {
-  env: Environment.LOCAL,
   rpc: {
-    testnet: process.env.ALCHEMY_RPC_TESTNET,
-    mainnet: process.env.ALCHEMY_RPC_MAINNET
+    testnet: process.env.RPC_TESTNET,
+    mainnet: process.env.RPC_MAINNET
   },
   tokens: {
     in: USDC_TOKEN,
-    amountIn: 5,
+    amountIn: 1,
     out: WETH_TOKEN,
     poolFee: FeeAmount.MEDIUM
   }

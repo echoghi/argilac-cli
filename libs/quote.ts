@@ -6,20 +6,21 @@ import { POOL_FACTORY_CONTRACT_ADDRESS, QUOTER_CONTRACT_ADDRESS } from './consta
 import { ethersProvider } from './provider';
 import { fromReadableAmount, toReadableAmount } from './utils';
 import { Token } from '@uniswap/sdk-core';
+import { CurrentConfig } from '../config';
 
-export async function quote(toSwap: Token, toRecieve: Token): Promise<string> {
+export async function quote(): Promise<string> {
   const quoterContract = new ethers.Contract(QUOTER_CONTRACT_ADDRESS, Quoter.abi, ethersProvider);
-  const poolConstants = await getPoolConstants(toSwap, toRecieve);
+  const poolConstants = await getPoolConstants(CurrentConfig.tokens.out, CurrentConfig.tokens.in);
 
   const quotedAmountOut = await quoterContract.callStatic.quoteExactInputSingle(
     poolConstants.token0,
     poolConstants.token1,
     poolConstants.fee,
-    fromReadableAmount(10, toSwap.decimals).toString(),
+    fromReadableAmount(CurrentConfig.tokens.amountIn, CurrentConfig.tokens.out.decimals).toString(),
     0
   );
 
-  return toReadableAmount(quotedAmountOut, toRecieve.decimals);
+  return toReadableAmount(quotedAmountOut, CurrentConfig.tokens.in.decimals);
 }
 
 async function getPoolConstants(

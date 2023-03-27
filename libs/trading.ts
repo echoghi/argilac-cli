@@ -24,6 +24,7 @@ import {
 import { fromReadableAmount } from './utils';
 import Logger from './logger';
 import { CurrentConfig } from '../config';
+import { quote } from './quote';
 
 export type TokenTrade = Trade<Token, Token, TradeType>;
 
@@ -95,7 +96,6 @@ export async function executeTrade(trade: TokenTrade): Promise<TransactionState>
 }
 
 // Helper Quoting and Pool Functions
-
 async function getOutputQuote(route: Route<Currency, Currency>) {
   const provider = ethersProvider;
 
@@ -107,7 +107,7 @@ async function getOutputQuote(route: Route<Currency, Currency>) {
     route,
     CurrencyAmount.fromRawAmount(
       CurrentConfig.tokens.in,
-      fromReadableAmount(10, CurrentConfig.tokens.in.decimals).toString()
+      fromReadableAmount(CurrentConfig.tokens.amountIn, CurrentConfig.tokens.in.decimals).toString()
     ),
     TradeType.EXACT_INPUT,
     {
@@ -115,12 +115,48 @@ async function getOutputQuote(route: Route<Currency, Currency>) {
     }
   );
 
-  const quoteCallReturnData = await provider.call({
-    to: QUOTER_CONTRACT_ADDRESS,
-    data: calldata
-  });
+  let quoteCallReturnData;
 
-  return ethers.utils.defaultAbiCoder.decode(['uint256'], quoteCallReturnData);
+  try {
+    quoteCallReturnData = await provider.call({
+      to: QUOTER_CONTRACT_ADDRESS,
+      data: calldata
+    });
+  } catch (e) {
+    Logger.error(e.message);
+  }
+
+  return quoteCallReturnData
+    ? ethers.utils.defaultAbiCoder.decode(['uint256'], quoteCallReturnData)
+    : 0;
+}
+
+export async function checkTokenTransferApproval(token: Token): Promise<TransactionState> {
+  const provider = ethersProvider;
+  const address = walletAddress;
+  if (!provider || !address) {
+    Logger.error('No Provider Found');
+    return TransactionState.Failed;
+  }
+
+  try {
+    const tokenContract = new ethers.Contract(token.address, ERC20_ABI, provider);
+
+    const transaction = await tokenContract.populateTransaction.allowance(
+      walletAddress,
+      SWAP_ROUTER_ADDRESS
+    );
+
+    return sendTransaction({
+      ...transaction,
+      from: address,
+      maxFeePerGas: MAX_FEE_PER_GAS,
+      maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS
+    });
+  } catch (e) {
+    Logger.error(e);
+    return TransactionState.Failed;
+  }
 }
 
 export async function getTokenTransferApproval(token: Token): Promise<TransactionState> {
@@ -133,6 +169,8 @@ export async function getTokenTransferApproval(token: Token): Promise<Transactio
 
   try {
     const tokenContract = new ethers.Contract(token.address, ERC20_ABI, provider);
+
+    //const approvedTokenAmount = await checkTokenTransferApproval(token);
 
     const transaction = await tokenContract.populateTransaction.approve(
       SWAP_ROUTER_ADDRESS,

@@ -1,12 +1,16 @@
-import { ethers, BigNumber, Wallet } from 'ethers';
+import { ethers, BigNumber, providers, Wallet } from 'ethers';
+import { BaseProvider } from '@ethersproject/providers';
 import Web3 from 'web3';
+import { CurrentConfig } from '../config';
 
 require('dotenv').config();
 
 const wallet = createWallet();
 
+const mainnetProvider = new ethers.providers.JsonRpcProvider(CurrentConfig.rpc.testnet);
+
 // @ts-ignore
-export const web3 = new Web3(new Web3.providers.HttpProvider(process.env.ALCHEMY_RPC_TESTNET));
+export const web3 = new Web3(new Web3.providers.HttpProvider(CurrentConfig.rpc.testnet));
 
 export const ethersProvider = wallet.provider;
 
@@ -15,13 +19,17 @@ export const walletAddress = wallet.address;
 function createWallet(): ethers.Wallet {
   // @ts-ignore
   const wallet = Wallet.fromMnemonic(process.env.MNEMONIC);
-  const provider = new ethers.providers.JsonRpcProvider(process.env.ALCHEMY_RPC_TESTNET);
+  const provider = new ethers.providers.JsonRpcProvider(CurrentConfig.rpc.testnet);
 
   return new ethers.Wallet(wallet.privateKey, provider);
 }
 
-export function getProvider() {
+export function getProvider(): providers.Provider {
   return ethersProvider;
+}
+
+export function getMainnetProvider(): BaseProvider {
+  return mainnetProvider;
 }
 
 export enum TransactionState {

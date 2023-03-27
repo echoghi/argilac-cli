@@ -1,0 +1,29 @@
+//@version=5
+strategy(title="MACD Strategy", overlay=true, currency=currency.NONE, initial_capital = 3000, default_qty_type = strategy.percent_of_equity, default_qty_value = 100)
+
+// Inputs
+fastLength = input.int(12, "Fast Length", minval=1)
+slowLength = input.int(26, "Slow Length", minval=1)
+signalLength = input.int(9, "Signal Length", minval=1)
+
+// Indicators
+[macdLine, signalLine, _] = ta.macd(close, fastLength, slowLength, signalLength)
+
+// Entry and exit conditions
+longCondition = ta.crossover(macdLine, signalLine)
+shortCondition = ta.crossunder(macdLine, signalLine)
+
+// Entry and exit logic
+if (longCondition)
+    strategy.entry("Long", strategy.long)
+if (shortCondition)
+    strategy.entry("Short", strategy.short)
+if (strategy.position_size > 0 and shortCondition)
+    strategy.close("Long")
+if (strategy.position_size < 0 and longCondition)
+    strategy.close("Short")
+
+// Plotting
+plot(macdLine, color=color.blue)
+plot(signalLine, color=color.red)
+hline(0, color=color.gray, linestyle=hline.style_dotted)
