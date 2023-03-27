@@ -2,6 +2,8 @@
 
 Crypto trading bot that buys/sells spot based on alerts from TradingView
 
+> ⚠️ **Under Construction:** ⚠️ Argilac works fine out of the box, but some values are hardcoded. The default configuration will trade WETH/USDC on the Polygon Mumbai testnet. If you wish to change this, you will have to refactor some hardcoded values in addition to updating the config file. Updates will come soon when I find the time.
+
 #### Setup Server
 
 1. Create an [Ngrok](https://ngrok.com) account and setup an auth token.
