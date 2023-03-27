@@ -8,6 +8,8 @@ import { formatBalance, formatUSD, getTokenBalance, getTokenBalances } from './u
 export async function sell(price: string) {
   const wethBalance = await getTokenBalance(walletAddress, WETH_TOKEN.address, ERC20_ABI);
   const usdcBalance = await getTokenBalance(walletAddress, USDC_TOKEN.address, ERC20_ABI);
+
+  const formattedOldUSDCBalance = await formatBalance(usdcBalance, USDC_TOKEN.decimals);
   const formattedBalance = await formatBalance(wethBalance, WETH_TOKEN.decimals);
   const hasBalance = formattedBalance > 0;
   const log = getLog();
@@ -27,7 +29,7 @@ export async function sell(price: string) {
       const { formattedUSDCBalance, formattedWETHBalance } = await getTokenBalances();
 
       // USDC balance after trade - cost basis - USDC balance before trade
-      const lastTradePNL = formattedUSDCBalance - 10 - usdcBalance;
+      const lastTradePNL = formattedUSDCBalance - 10 - formattedOldUSDCBalance;
 
       const formattedPNL = formatUSD(lastTradePNL);
 
