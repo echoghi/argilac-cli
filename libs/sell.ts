@@ -36,7 +36,7 @@ export async function sell(price: string) {
       const PNL = log.PNL ? log.PNL + lastTradePNL : lastTradePNL;
 
       saveLog({
-        positionOpen: formattedWETHBalance === 0,
+        positionOpen: formattedWETHBalance > 0,
         usdcBalance: formattedUSDCBalance,
         wethBalance: formattedWETHBalance,
         lastTrade: `Position closed at ${price}`,
