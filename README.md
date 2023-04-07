@@ -24,7 +24,7 @@ Crypto trading bot that buys/sells spot based on alerts from TradingView
 
 1. Add @BotFather on telegram and follow the prompts. You will receive an api key.
 2. Add "Telegram Bot Raw" to receive your unique chat id.
-3. Add your api key as `TELEGRAM_BOT_TOKEN` and you chat id as `TELEGRAM_CHAT_ID` in your env.
+3. Add your api key as `TELEGRAM_BOT_TOKEN` and your chat id as `TELEGRAM_CHAT_ID` in your env.
 4. Your buys, sells, errors, and insufficient balance (bot is out of gas) notifications will be sent to telegram. If you omitted the api key or chat id, telegram notifications will be turned off.
 
 #### Profit!
