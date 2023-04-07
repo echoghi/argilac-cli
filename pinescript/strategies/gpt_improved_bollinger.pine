@@ -1,0 +1,56 @@
+//@version=5
+strategy("Improved Bollinger Bands Buy/Sell", overlay=true, shorttitle="BBRSI", precision=2, currency=currency.NONE, initial_capital = 3000, default_qty_type = strategy.percent_of_equity, default_qty_value = 100)
+
+// Bollinger Band Inputs
+length = input.int(34, "Length")
+mult = input.float(2.0, "Multiplier")
+
+// RSI Inputs
+rsiPeriod = input.int(14, "RSI Period")
+rsiOverbought = input.int(70, "RSI Overbought")
+rsiOversold = input.int(30, "RSI Oversold")
+
+// Stop Loss and Take Profit Levels
+stopLossPerc = input.float(2, "Stop Loss (%)", step=0.1) / 100
+takeProfitPerc = input.float(4, "Take Profit (%)", step=0.1) / 100
+
+// Position Sizing
+riskPerc = input.float(1, "Risk per trade (%)", step=0.1) / 100
+initialCapital = input.float(10000, "Initial Capital")
+
+// Bollinger Band calculations
+basis = ta.sma(close, length)
+dev = ta.stdev(close, length)
+dev2 = mult * dev
+upper_band = basis + dev2
+lower_band = basis - dev2
+
+// RSI calculation
+rsi = ta.rsi(close, rsiPeriod)
+
+// Long entry condition
+buy_entry = ta.crossunder(close, lower_band) and rsi < rsiOversold
+
+// Exit conditions
+buy_exit = ta.crossunder(close, basis)
+
+// Entry price and position sizing calculation
+entryPrice = ta.valuewhen(buy_entry, close, 0)
+positionSize = (riskPerc * initialCapital) / (stopLossPerc * close)
+
+// Plot Bollinger Bands and RSI
+plot(basis, color=color.new(color.yellow, 0), title="Basis")
+plot(upper_band, color=color.new(color.green, 0), title="Upper Band")
+plot(lower_band, color=color.new(color.red, 0), title="Lower Band")
+// hline(rsiOverbought, "Overbought", color.silver)
+// hline(rsiOversold, "Oversold", color.silver)
+// plot(rsi, "RSI", color.blue)
+
+// Plot Trades
+plotshape(buy_entry, 'Buy', shape.labelup, location.belowbar, color=color.green, size=size.small, offset=0)
+plotshape(buy_exit, 'Sell', shape.labeldown, location.abovebar, color=color.red, size=size.small, offset=0)
+
+if (buy_entry)
+    strategy.entry("Buy", strategy.long)
+if (buy_exit)
+    strategy.close("Buy")

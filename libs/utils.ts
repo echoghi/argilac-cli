@@ -1,7 +1,7 @@
 import { Token, TradeType } from '@uniswap/sdk-core';
 import { Trade } from '@uniswap/v3-sdk';
 import { BigNumber, ethers } from 'ethers';
-import { ERC20_ABI, USDC_TOKEN, WETH_TOKEN } from './constants';
+import { ERC20_ABI, MATIC_TOKEN, USDC_TOKEN, WETH_TOKEN } from './constants';
 import { getProvider, walletAddress } from './provider';
 
 const MAX_DECIMALS = 4;
@@ -30,7 +30,7 @@ export async function getTokenBalance(address, tokenAddress, abi) {
 }
 
 export async function formatBalance(balance, decimals) {
-  let formattedBalance = Number(ethers.utils.formatUnits(balance, decimals));
+  let formattedBalance = Number(ethers.utils.formatUnits(`${balance}`, decimals));
 
   // Check if positive balance is just "dust"
   if (formattedBalance <= 0.000000000000001) {
@@ -50,9 +50,19 @@ export async function getTokenBalances() {
   return {
     usdcBalance: updatedUSDCBalance,
     wethBalance: updatedWETHBalance,
+
     formattedUSDCBalance,
     formattedWETHBalance
   };
+}
+
+export async function hasGasMoney() {
+  const maticBalance = await getTokenBalance(walletAddress, MATIC_TOKEN.address, ERC20_ABI);
+
+  const formattedBalance = await formatBalance(maticBalance, MATIC_TOKEN.decimals);
+  const hasBalance = formattedBalance >= 1;
+
+  return hasBalance;
 }
 
 export function formatUSD(amount: number): string {

@@ -3,6 +3,7 @@ import { getLog, saveLog, trackError } from './log';
 import Logger from './logger';
 import { walletAddress } from './provider';
 import { executeRoute, generateRoute } from './routing';
+import sendTelegramAlert from './sendTelegramAlert';
 import { formatBalance, getTokenBalance, getTokenBalances } from './utils';
 
 export async function buy(price: string) {
@@ -27,7 +28,7 @@ export async function buy(price: string) {
 
       saveLog({
         ...log,
-        positionOpen: true,
+        positionOpen: formattedWETHBalance > 0,
         usdcBalance: formattedUSDCBalance,
         wethBalance: formattedWETHBalance,
         lastTrade: `Position opened at ${price}`,
@@ -35,9 +36,13 @@ export async function buy(price: string) {
         lastTradePrice: price
       });
 
+      sendTelegramAlert(`Position opened at ${price} (${formattedWETHBalance.toFixed(5)} WETH)`);
+
       Logger.success('Buy order executed');
     } catch (e) {
       Logger.error('Buy order failed');
+
+      sendTelegramAlert('Buy order failed');
 
       trackError({
         type: 'BUY',

@@ -20,8 +20,15 @@ Crypto trading bot that buys/sells spot based on alerts from TradingView
 2. In the "Settings" tab of the alert, add the json `{ type: "BUY", price: "{{close}}" }` to your buy alert and `{ type: "SELL", price: "{{close}}" }` to your sell alert.
 3. In the "Notifications" tab of the alert add the url provided by your ngrok output and append "/route" to the end.
 
+#### Set up Telegram bot (optional)
+
+1. Add @BotFather on telegram and follow the prompts. You will receive an api key.
+2. Add "Telegram Bot Raw" to receive your unique chat id.
+3. Add your api key as `TELEGRAM_BOT_TOKEN` and you chat id as `TELEGRAM_CHAT_ID` in your env.
+4. Your buys, sells, errors, and insufficient balance (bot is out of gas) notifications will be sent to telegram. If you omitted the api key or chat id, telegram notifications will be turned off.
+
 #### Profit!
 
-Your bot should now be up and running. You can see buys/sells in the server output. I recommend also receiving an email straight from TradingView to better keep track.
+Your bot should now be up and running. You can see buys/sells in the server output. I recommend using the telegram bot to keep track of trades, but you can also receive an email straight from TradingView with your alert settings.
 
 > **Note:** Prices for testnet stablecoin/token pairs may not reflect mainnet reality. This makes testing strategies difficult, so I recommend backtesting your strategies on TradingView with pinescript before deploying. You can find some sample strategies/indicators in the pinescript folder.

@@ -24,7 +24,6 @@
   },
   "scripts": {
     "server": "esno app.ts",
-    "test": "esno test.ts",
     "ngrok": "ngrok http 80"
   },
   "repository": {

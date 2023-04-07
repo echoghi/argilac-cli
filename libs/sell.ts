@@ -3,6 +3,7 @@ import { getLog, saveLog, trackError } from './log';
 import Logger from './logger';
 import { walletAddress } from './provider';
 import { executeRoute, generateRoute } from './routing';
+import sendTelegramAlert from './sendTelegramAlert';
 import { formatBalance, formatUSD, getTokenBalance, getTokenBalances } from './utils';
 
 export async function sell(price: string) {
@@ -31,25 +32,36 @@ export async function sell(price: string) {
       // USDC balance after trade - cost basis - USDC balance before trade
       const lastTradePNL = formattedUSDCBalance - 10 - formattedOldUSDCBalance;
 
-      const formattedPNL = formatUSD(lastTradePNL);
+      const formattedTradePNL = formatUSD(lastTradePNL);
+      const PNL = log.PNL ? log.PNL + lastTradePNL : lastTradePNL;
 
       saveLog({
-        positionOpen: false,
+        positionOpen: formattedWETHBalance === 0,
         usdcBalance: formattedUSDCBalance,
         wethBalance: formattedWETHBalance,
         lastTrade: `Position closed at ${price}`,
         lastTradeTime: `[${new Date().toLocaleString()}]`,
         lastTradePrice: price,
-        PNL: log.PNL ? log.PNL + lastTradePNL : lastTradePNL
+        PNL
       });
 
       if (lastTradePNL > 0) {
-        Logger.success(`Sell order executed for a gain of ${formattedPNL}`);
+        const message = `Position closed at ${price} for a gain of ${formattedTradePNL} - Total P&L: ${formatUSD(
+          PNL
+        )}`;
+        sendTelegramAlert(message);
+        Logger.success(message);
       } else {
-        Logger.error(`Sell order executed for a loss of ${formattedPNL}`);
+        const message = `Position closed at ${price} for a loss of ${formattedTradePNL} - Total P&L: ${formatUSD(
+          PNL
+        )}`;
+        sendTelegramAlert(message);
+        Logger.error(message);
       }
     } catch (e) {
       Logger.error('Sell order failed');
+
+      sendTelegramAlert('Sell order failed');
 
       trackError({
         type: 'SELL',

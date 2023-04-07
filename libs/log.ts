@@ -35,8 +35,8 @@ export function saveLog(newLog: Log) {
   try {
     fs.writeFileSync(`./log.json`, JSON.stringify(newLog, null, 2));
 
-    Logger.info('Updated state:');
-    Logger.table(newLog);
+    // Logger.info('Updated state:');
+    // Logger.table(newLog);
   } catch (e) {
     Logger.error('Error saving log.json');
   }

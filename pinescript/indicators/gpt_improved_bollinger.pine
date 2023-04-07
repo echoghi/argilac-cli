@@ -1,0 +1,35 @@
+//@version=5
+indicator("EMA & Stochastic Strategy", overlay=true, shorttitle="EMAStoch", precision=2)
+
+// EMA Inputs
+emaShort = input.int(9, "Short EMA Period")
+emaLong = input.int(21, "Long EMA Period")
+
+// Stochastic Inputs
+stochK = input.int(14, "Stochastic %K Period")
+stochD = input.int(3, "Stochastic %D Period")
+stochOverbought = input.int(80, "Overbought Level")
+stochOversold = input.int(20, "Oversold Level")
+
+// EMA calculations
+emaShortValue = ta.ema(close, emaShort)
+emaLongValue = ta.ema(close, emaLong)
+
+// Stochastic calculations
+[stochKLine, stochDLine] = ta.stoch(close, high, low, stochK, stochD)
+
+// Entry conditions
+buy_entry = ta.crossover(emaShortValue, emaLongValue) and stochKLine < stochOversold and stochDLine < stochOversold
+sell_entry = ta.crossunder(emaShortValue, emaLongValue) and stochKLine > stochOverbought and stochDLine > stochOverbought
+
+// Plot EMAs, Stochastic Oscillator, and Overbought/Oversold levels
+plot(emaShortValue, color=color.blue, title="Short EMA")
+plot(emaLongValue, color=color.red, title="Long EMA")
+hline(stochOverbought, "Overbought", color.silver)
+hline(stochOversold, "Oversold", color.silver)
+plot(stochKLine, color=color.green, title="Stochastic %K")
+plot(stochDLine, color=color.red, title="Stochastic %D")
+
+// Plot Trades
+plotshape(buy_entry, 'Buy', shape.labelup, location.belowbar, color=color.green, size=size.small, offset=0)
+plotshape(sell_entry, 'Sell', shape.labeldown, location.abovebar, color=color.red, size=size.small, offset=0)
