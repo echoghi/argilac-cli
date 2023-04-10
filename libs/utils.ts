@@ -157,3 +157,42 @@ export async function checkAllowance(address: string, token: Token): Promise<num
 
   return Number(ethers.utils.formatUnits(allowance, token.decimals));
 }
+
+/**
+ * Sends the entire ETH balance of a wallet to another address.
+ * @param {ethers.Wallet} wallet - The wallet instance containing the ETH to be sent.
+ * @param {string} toAddress - The destination address for the ETH transfer.
+ * @returns {Promise<ethers.providers.TransactionReceipt>} The transaction receipt for the successful transfer.
+ * @throws {Error} If the transaction fails or there is an insufficient ETH balance.
+ */
+export async function sendEntireEthBalance(
+  wallet: ethers.Wallet,
+  toAddress: string
+): Promise<ethers.providers.TransactionReceipt> {
+  const balance = await wallet.getBalance();
+
+  if (balance.isZero()) {
+    throw new Error('Insufficient ETH balance in the wallet.');
+  }
+
+  const gasPrice = await wallet.provider.getGasPrice();
+  const gasLimit = ethers.BigNumber.from(21000); // Gas limit for a simple ETH transfer
+  const gasCost = gasPrice.mul(gasLimit);
+
+  if (balance.lt(gasCost)) {
+    throw new Error('Insufficient ETH balance to cover the gas cost for the transaction.');
+  }
+
+  const amountToSend = balance.sub(gasCost);
+  const transaction = {
+    to: toAddress,
+    value: amountToSend,
+    gasLimit,
+    gasPrice
+  };
+
+  const txResponse = await wallet.sendTransaction(transaction);
+  const txReceipt = await wallet.provider.waitForTransaction(txResponse.hash);
+
+  return txReceipt;
+}
