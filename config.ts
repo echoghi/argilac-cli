@@ -23,8 +23,8 @@ export interface ExampleConfig {
   };
   strategy: {
     size: number; // fraction of equity to use for trade
-    min: number; // minimum amount of tokens to hold (trading will halt if balance is below this)
-    max: number | undefined; // maximum amount of tokens to hold (trading will halt if balance is above this)
+    min: number; // minimum amount of USDC to hold (trading will halt if balance is below this)
+    max: number | undefined; // maximum amount of USDC to hold (trading will halt if balance is above this)
   };
 }
 
