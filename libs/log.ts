@@ -18,6 +18,13 @@ interface Error {
   time?: string;
 }
 
+/**
+ * Reads and returns the contents of the log.json file.
+ *
+ * @returns {Log} An object containing the log data.
+ *
+ */
+
 export function getLog(): Log {
   let log;
 
@@ -31,17 +38,24 @@ export function getLog(): Log {
   return log;
 }
 
+/**
+ * Saves the provided log data to the log.json file.
+ *
+ * @param {Log} newLog - An object containing the log data to be saved.
+ *
+ */
 export function saveLog(newLog: Log) {
   try {
     fs.writeFileSync(`./log.json`, JSON.stringify(newLog, null, 2));
-
-    // Logger.info('Updated state:');
-    // Logger.table(newLog);
   } catch (e) {
     Logger.error('Error saving log.json');
   }
 }
 
+/**
+ * Reads error-log.json and returns an array of error objects.
+ * @returns {Error[]} An array of error objects.
+ */
 export function getErrorLog(): Error[] {
   let errors = [];
 
@@ -55,6 +69,10 @@ export function getErrorLog(): Error[] {
   return errors;
 }
 
+/**
+ * Adds an error object to error-log.json.
+ * @param {Error} error - The error object to be added.
+ */
 export function trackError(error: Error) {
   try {
     const errors = getErrorLog();

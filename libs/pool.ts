@@ -16,6 +16,13 @@ interface PoolInfo {
   tick: number;
 }
 
+/**
+ * Retrieves pool information from a Uniswap V3 pool.
+ *
+ * @returns {Promise<PoolInfo>} A promise that resolves to an object containing pool information, such as token addresses, fee, tick spacing, liquidity, square root price, and current tick.
+ * @throws Will throw an error if the provider is not available.
+ */
+
 export async function getPoolInfo(): Promise<PoolInfo> {
   const provider = getProvider();
   if (!provider) {

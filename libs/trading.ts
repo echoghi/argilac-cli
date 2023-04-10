@@ -169,8 +169,6 @@ export async function getTokenTransferApproval(token: Token): Promise<Transactio
   try {
     const tokenContract = new ethers.Contract(token.address, ERC20_ABI, provider);
 
-    //const approvedTokenAmount = await checkTokenTransferApproval(token);
-
     const transaction = await tokenContract.populateTransaction.approve(
       SWAP_ROUTER_ADDRESS,
       fromReadableAmount(TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER, token.decimals).toString()

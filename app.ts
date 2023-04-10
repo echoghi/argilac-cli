@@ -18,6 +18,18 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+/**
+ * API route to process a trade signal.
+ * Receives the trade type and price as request body parameters, then triggers the run function.
+ *
+ * @example
+ * // Request body format:
+ * {
+ *   "type": "BUY" | "SELL",
+ *   "price": "123.45"
+ * }
+ */
+
 app.post('/trade', (req, res) => {
   const type = req?.body?.type;
   const price = req?.body?.price;

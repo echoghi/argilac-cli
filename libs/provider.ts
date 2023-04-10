@@ -16,6 +16,13 @@ export const ethersProvider = wallet.provider;
 
 export const walletAddress = wallet.address;
 
+/**
+ * Creates an Ethereum wallet instance using a mnemonic from the environment variable.
+ *
+ * @returns {ethers.Wallet} A wallet instance connected to the specified provider.
+ *
+ */
+
 export function createWallet(): ethers.Wallet {
   // @ts-ignore
   const wallet = Wallet.fromMnemonic(process.env.MNEMONIC);
@@ -40,6 +47,14 @@ export enum TransactionState {
   Sent = 'Sent'
 }
 
+/**
+ * Sends a transaction and returns the transaction state.
+ *
+ * @param {ethers.providers.TransactionRequest} transaction - The transaction to send.
+ * @returns {Promise<TransactionState>} A promise that resolves to the state of the transaction (Sent or Failed).
+ *
+ */
+
 export async function sendTransaction(
   transaction: ethers.providers.TransactionRequest
 ): Promise<TransactionState> {
@@ -48,6 +63,15 @@ export async function sendTransaction(
   }
   return sendTransactionViaWallet(transaction);
 }
+
+/**
+ * Sends a transaction via a connected wallet and returns the transaction state.
+ *
+ * @param {ethers.providers.TransactionRequest} transaction - The transaction to send.
+ * @returns {Promise<TransactionState>} A promise that resolves to the state of the transaction (Sent or Failed).
+ * @throws Will throw an error if the provider is not available.
+ *
+ */
 
 async function sendTransactionViaWallet(
   transaction: ethers.providers.TransactionRequest

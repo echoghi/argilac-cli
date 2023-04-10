@@ -6,6 +6,13 @@ import { executeRoute, generateRoute } from './routing';
 import sendTelegramAlert from './sendTelegramAlert';
 import { formatBalance, formatUSD, getTokenBalance, getTokenBalances } from './utils';
 
+/**
+ * Executes a sell order by swapping WETH for USDC, updates the log, and sends an alert with the result.
+ *
+ * @param {string} price - The price at which the position is being closed.
+ * @throws Will throw an error if the sell order fails or the trade is cancelled.
+ */
+
 export async function sell(price: string) {
   const wethBalance = await getTokenBalance(walletAddress, WETH_TOKEN.address, ERC20_ABI);
   const usdcBalance = await getTokenBalance(walletAddress, USDC_TOKEN.address, ERC20_ABI);

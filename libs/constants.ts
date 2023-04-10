@@ -26,14 +26,6 @@ export const WBTC_TOKEN = new Token(
   'Wrapped Bitcoin'
 );
 
-export const AAVE_TOKEN = new Token(
-  SupportedChainId.POLYGON_MUMBAI,
-  '0x7ec62b6fC19174255335C8f4346E0C2fcf870a6B',
-  18,
-  'AAVE',
-  'Aave Token'
-);
-
 export const DAI_TOKEN = new Token(
   SupportedChainId.POLYGON_MUMBAI,
   '0x001B3B4d0F3714Ca98ba10F6042DaEbF0B1B7b6F',
