@@ -1,7 +1,7 @@
 import { Token } from '@uniswap/sdk-core';
 import { FeeAmount } from '@uniswap/v3-sdk';
 
-import { USDC_TOKEN, WETH_TOKEN } from './libs/constants';
+import { USDC_TOKEN, WETH_TOKEN } from '../constants';
 
 require('dotenv').config();
 

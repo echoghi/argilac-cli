@@ -4,5 +4,4 @@ node_modules
 *.log
 .DS_Store
 .vscode
-log.json
-error-log.json
+logs/*.json

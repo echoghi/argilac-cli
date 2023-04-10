@@ -1,8 +1,8 @@
-import Logger from './libs/logger';
-import { buy } from './libs/buy';
-import { sell } from './libs/sell';
-import { hasGasMoney } from './libs/utils';
-import sendTelegramAlert from './libs/sendTelegramAlert';
+import Logger from '../../lib/logger';
+import { buy } from '../../lib/buy';
+import { sell } from '../../lib/sell';
+import { hasGasMoney } from '../../utils';
+import sendTelegramAlert from '../../lib/sendTelegramAlert';
 
 /**
  * Processes buy or sell orders based on the given type, provided there are sufficient gas funds.

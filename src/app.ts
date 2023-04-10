@@ -2,8 +2,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import lolcatjs from 'lolcatjs';
 
-import Logger from './libs/logger';
-import { run } from './trade';
+import Logger from './lib/logger';
+import { run } from './api/routes/trade';
 
 const app = express();
 const port = 80;
@@ -29,7 +29,6 @@ app.get('/', (req, res) => {
  *   "price": "123.45"
  * }
  */
-
 app.post('/trade', (req, res) => {
   const type = req?.body?.type;
   const price = req?.body?.price;

@@ -29,7 +29,7 @@ export function getLog(): Log {
   let log;
 
   try {
-    const logJSON = fs.readFileSync('./log.json', 'utf-8');
+    const logJSON = fs.readFileSync('./logs/log.json', 'utf-8');
     log = JSON.parse(logJSON);
   } catch (e) {
     Logger.error('Error reading log.json');
@@ -46,7 +46,7 @@ export function getLog(): Log {
  */
 export function saveLog(newLog: Log) {
   try {
-    fs.writeFileSync(`./log.json`, JSON.stringify(newLog, null, 2));
+    fs.writeFileSync(`./logs/log.json`, JSON.stringify(newLog, null, 2));
   } catch (e) {
     Logger.error('Error saving log.json');
   }
@@ -60,7 +60,7 @@ export function getErrorLog(): Error[] {
   let errors = [];
 
   try {
-    const logJSON = fs.readFileSync('./error-log.json', 'utf-8');
+    const logJSON = fs.readFileSync('./logs/error-log.json', 'utf-8');
     errors = JSON.parse(logJSON);
   } catch (e) {
     Logger.error('Error reading error-log.json');
@@ -81,7 +81,7 @@ export function trackError(error: Error) {
       ...error
     });
 
-    fs.writeFileSync(`./error-log.json`, JSON.stringify(errors, null, 2));
+    fs.writeFileSync(`./logs/error-log.json`, JSON.stringify(errors, null, 2));
   } catch (e) {
     Logger.error('Error saving log.json');
   }

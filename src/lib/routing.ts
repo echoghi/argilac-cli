@@ -21,8 +21,8 @@ import {
   ERC20_ABI,
   TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER,
   V3_SWAP_ROUTER_ADDRESS
-} from './constants';
-import { checkAllowance, fromReadableAmount } from './utils';
+} from '../constants';
+import { checkAllowance, fromReadableAmount } from '../utils';
 import Logger from './logger';
 import { trackError } from './log';
 

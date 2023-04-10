@@ -1,10 +1,10 @@
-import { ERC20_ABI, USDC_TOKEN, WETH_TOKEN } from './constants';
+import { ERC20_ABI, USDC_TOKEN, WETH_TOKEN } from '../constants';
 import { getLog, saveLog, trackError } from './log';
 import Logger from './logger';
 import { walletAddress } from './provider';
 import { executeRoute, generateRoute } from './routing';
 import sendTelegramAlert from './sendTelegramAlert';
-import { formatBalance, formatUSD, getTokenBalance, getTokenBalances } from './utils';
+import { formatBalance, formatUSD, getTokenBalance, getTokenBalances } from '../utils';
 
 /**
  * Executes a sell order by swapping WETH for USDC, updates the log, and sends an alert with the result.

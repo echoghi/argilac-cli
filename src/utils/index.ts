@@ -7,9 +7,8 @@ import {
   USDC_TOKEN,
   V3_SWAP_ROUTER_ADDRESS,
   WETH_TOKEN
-} from './constants';
-import { getProvider, walletAddress } from './provider';
-import { ethersProvider } from './provider';
+} from '../constants';
+import { getProvider, ethersProvider, walletAddress } from '../lib/provider';
 import { CurrentConfig } from '../config';
 
 const MAX_DECIMALS = 4;

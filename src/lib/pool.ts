@@ -3,7 +3,7 @@ import { computePoolAddress } from '@uniswap/v3-sdk';
 import { ethers } from 'ethers';
 
 import { CurrentConfig } from '../config';
-import { POOL_FACTORY_CONTRACT_ADDRESS } from './constants';
+import { POOL_FACTORY_CONTRACT_ADDRESS } from '../constants';
 import { getProvider } from './provider';
 
 interface PoolInfo {

@@ -20,8 +20,8 @@ import {
   QUOTER_CONTRACT_ADDRESS,
   SWAP_ROUTER_ADDRESS,
   TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER
-} from './constants';
-import { fromReadableAmount } from './utils';
+} from '../constants';
+import { fromReadableAmount } from '../utils';
 import Logger from './logger';
 import { CurrentConfig } from '../config';
 
