@@ -21,6 +21,11 @@ export interface ExampleConfig {
     out: Token; // Token to hold in between trades
     poolFee: number; // Gas fee for the trade
   };
+  strategy: {
+    size: number; // fraction of equity to use for trade
+    min: number; // minimum amount of tokens to hold (trading will halt if balance is below this)
+    max: number | undefined; // maximum amount of tokens to hold (trading will halt if balance is above this)
+  };
 }
 
 export const CurrentConfig: ExampleConfig = {
@@ -33,5 +38,10 @@ export const CurrentConfig: ExampleConfig = {
     amountIn: 10,
     out: WETH_TOKEN,
     poolFee: FeeAmount.MEDIUM
+  },
+  strategy: {
+    size: 0.5,
+    min: 50,
+    max: undefined
   }
 };

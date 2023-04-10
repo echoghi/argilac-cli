@@ -50,14 +50,6 @@ export const MATIC_TOKEN = new Token(
   'Matic'
 );
 
-export const WMATIC_TOKEN = new Token(
-  SupportedChainId.POLYGON_MUMBAI,
-  '0x4Bab602423C8a009ca8c25eF6e3D64367789C8a9',
-  18,
-  'WMATIC',
-  'Wrapped Matic'
-);
-
 export const USDC_TOKEN = new Token(
   SupportedChainId.POLYGON_MUMBAI,
   USDC_CONTRACT_ADDRESS,
@@ -75,7 +67,7 @@ export const ERC20_ABI = [
   // Authenticated Functions
   'function transfer(address to, uint amount) returns (bool)',
   'function approve(address _spender, uint256 _value) returns (bool)',
-  'function allowance(address owner, uint256 spender) returns (uint256)',
+  'function allowance(address owner, address spender) external view returns (uint256)',
 
   // Events
   'event Transfer(address indexed from, address indexed to, uint amount)'
@@ -92,4 +84,4 @@ export const WETH_ABI = [
 // Transactions
 export const MAX_FEE_PER_GAS = 100000000000;
 export const MAX_PRIORITY_FEE_PER_GAS = 100000000000;
-export const TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER = 2000;
+export const TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER = 500;

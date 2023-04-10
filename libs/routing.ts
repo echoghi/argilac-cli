@@ -22,7 +22,7 @@ import {
   TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER,
   V3_SWAP_ROUTER_ADDRESS
 } from './constants';
-import { fromReadableAmount } from './utils';
+import { checkAllowance, fromReadableAmount } from './utils';
 import Logger from './logger';
 import { trackError } from './log';
 
@@ -67,7 +67,11 @@ export async function generateRoute(
   return route;
 }
 
-export async function executeRoute(route: SwapRoute, tokenIn: Token): Promise<TransactionState> {
+export async function executeRoute(
+  route: SwapRoute,
+  tokenIn: Token,
+  tradeAmount: number
+): Promise<TransactionState> {
   const provider = getProvider();
   let res;
 
@@ -75,7 +79,8 @@ export async function executeRoute(route: SwapRoute, tokenIn: Token): Promise<Tr
     throw new Error('Cannot execute a trade without a connected wallet');
   }
 
-  const tokenApproval = await getTokenTransferApproval(tokenIn);
+  // Get approval for token transfer if needed
+  const tokenApproval = await getTokenTransferApproval(tokenIn, tradeAmount);
 
   // Fail if transfer approvals do not go through
   if (tokenApproval !== TransactionState.Sent) {
@@ -103,26 +108,40 @@ export async function executeRoute(route: SwapRoute, tokenIn: Token): Promise<Tr
   return res;
 }
 
-export async function getTokenTransferApproval(token: Token): Promise<TransactionState> {
+export async function getTokenTransferApproval(
+  token: Token,
+  tradeAmount?: number
+): Promise<TransactionState> {
   const provider = getProvider();
   const address = walletAddress;
   if (!provider || !address) {
-    console.log('No Provider Found');
+    Logger.error('No Provider Found');
     return TransactionState.Failed;
   }
 
   try {
-    const tokenContract = new ethers.Contract(token.address, ERC20_ABI, provider);
+    const tradeSize = tradeAmount || TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER;
+    const approvedAmount = await checkAllowance(address, token);
 
-    const transaction = await tokenContract.populateTransaction.approve(
-      V3_SWAP_ROUTER_ADDRESS,
-      fromReadableAmount(TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER, token.decimals).toString()
-    );
+    // If the approved amount is greater than the trade size, we don't need to approve again
+    if (approvedAmount >= tradeSize) {
+      return TransactionState.Sent;
+    } else {
+      const tokenContract = new ethers.Contract(token.address, ERC20_ABI, provider);
 
-    return sendTransaction({
-      ...transaction,
-      from: address
-    });
+      const transaction = await tokenContract.populateTransaction.approve(
+        V3_SWAP_ROUTER_ADDRESS,
+        fromReadableAmount(
+          tradeAmount || TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER,
+          token.decimals
+        ).toString()
+      );
+
+      return sendTransaction({
+        ...transaction,
+        from: address
+      });
+    }
   } catch (e) {
     Logger.error('Failed to get token approval for swap');
 

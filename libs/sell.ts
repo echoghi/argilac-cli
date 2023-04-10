@@ -25,7 +25,8 @@ export async function sell(price: string) {
 
   if (route && hasBalance && log.positionOpen) {
     try {
-      const res = await executeRoute(route, WETH_TOKEN);
+      // Sell all WETH for USDC
+      const res = await executeRoute(route, WETH_TOKEN, formattedBalance);
 
       const { formattedUSDCBalance, formattedWETHBalance } = await getTokenBalances();
 

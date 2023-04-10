@@ -24,7 +24,6 @@ import {
 import { fromReadableAmount } from './utils';
 import Logger from './logger';
 import { CurrentConfig } from '../config';
-import { quote } from './quote';
 
 export type TokenTrade = Trade<Token, Token, TradeType>;
 

@@ -1,6 +1,6 @@
 {
   "name": "argilac",
-  "description": "A polygon trading bot",
+  "description": "A crypto trading bot",
   "version": "1.0.0",
   "main": "app.ts",
   "dependencies": {

@@ -1,15 +1,16 @@
+import { CurrentConfig } from '../config';
 import { ERC20_ABI, USDC_TOKEN, WETH_TOKEN } from './constants';
 import { getLog, saveLog, trackError } from './log';
 import Logger from './logger';
 import { walletAddress } from './provider';
 import { executeRoute, generateRoute } from './routing';
 import sendTelegramAlert from './sendTelegramAlert';
-import { formatBalance, getTokenBalance, getTokenBalances } from './utils';
+import { formatBalance, getBuyAmount, getTokenBalance, getTokenBalances } from './utils';
 
 export async function buy(price: string) {
   const usdcBalance = await getTokenBalance(walletAddress, USDC_TOKEN.address, ERC20_ABI);
   const formattedBalance = await formatBalance(usdcBalance, USDC_TOKEN.decimals);
-  const hasBalance = formattedBalance > 0;
+  const hasBalance = formattedBalance > CurrentConfig.strategy.min;
   const log = getLog();
 
   if (log.positionOpen) {
@@ -18,11 +19,13 @@ export async function buy(price: string) {
     Logger.error('Insufficient USDC balance');
   }
 
-  const route = await generateRoute(USDC_TOKEN, WETH_TOKEN, 10);
+  const tradeAmount = getBuyAmount(formattedBalance);
+
+  const route = await generateRoute(USDC_TOKEN, WETH_TOKEN, tradeAmount);
 
   if (route && hasBalance && !log.positionOpen) {
     try {
-      const res = await executeRoute(route, USDC_TOKEN);
+      const res = await executeRoute(route, USDC_TOKEN, tradeAmount);
 
       const { formattedUSDCBalance, formattedWETHBalance } = await getTokenBalances();
 

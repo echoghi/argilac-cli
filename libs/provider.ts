@@ -16,7 +16,7 @@ export const ethersProvider = wallet.provider;
 
 export const walletAddress = wallet.address;
 
-function createWallet(): ethers.Wallet {
+export function createWallet(): ethers.Wallet {
   // @ts-ignore
   const wallet = Wallet.fromMnemonic(process.env.MNEMONIC);
   const provider = new ethers.providers.JsonRpcProvider(CurrentConfig.rpc.testnet);
