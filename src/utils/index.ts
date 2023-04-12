@@ -21,7 +21,8 @@ const MAX_DECIMALS = 4;
  * @returns A BigNumber representing the converted amount.
  */
 export function fromReadableAmount(amount: number, decimals: number): BigNumber {
-  return ethers.utils.parseUnits(amount.toString(), decimals);
+  const fixedAmount = Number(amount.toFixed(decimals));
+  return ethers.utils.parseUnits(fixedAmount.toString(), decimals);
 }
 
 /**
