@@ -1,4 +1,4 @@
-<img src="./src/assets/logo.png" alt="Logo" width="250" height="250">
+![Logo](./src/assets/banner.png)
 
 # ⚡️ argilac ⚡️
 
