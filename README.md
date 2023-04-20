@@ -1,8 +1,8 @@
-![Logo](./src/assets/logo.png)
+<img src="./src/assets/logo.png" alt="Logo" width="250" height="250">
 
 # ⚡️ argilac ⚡️
 
-Crypto trading bot that buys/sells spot based on alerts from TradingView
+Crypto trading bot that buys/sells spot based on alerts from TradingView.
 
 > ⚠️ **Under Construction:** ⚠️ Argilac works fine out of the box, but some values such as the active RPC endpoint, token contract addresses, and active token pairs in `buy.ts` and `sell.ts` are hardcoded. The current configuration will trade WETH/USDC on the Polygon Mumbai testnet. If you wish to change this, you will have to refactor these hardcoded values in addition to updating the config file. Updates will come soon when I find the time.
 
