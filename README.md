@@ -8,7 +8,7 @@ Crypto trading bot that buys/sells spot based on alerts from TradingView.
 
 #### Setup Server
 
-1. Create an [Ngrok](https://ngrok.com) account and setup an auth token.
+1. Install Ngrok, create an [account](https://ngrok.com) and setup an auth token.
 2. Set up a `.env` file with the following variables `RPC_MAINNET`, `RPC_TESTNET`, `MNEMONIC`.
 3. Check your preferences in `config.ts`. You can set the tokens you wish to buy/sell between here. You can choose to trade live or on the testnet.
    > **Note:** The bot defaults to the Polygon Mumbai testnet trading WETH/USDC, but any EVM chain will work just fine provided that Uniswap pools have liquidity for the token pair you choose. I recommend Polygon or EVM L2s for cheap transactions.
