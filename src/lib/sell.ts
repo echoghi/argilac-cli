@@ -22,7 +22,7 @@ export async function sell(price: string) {
   const hasBalance = formattedBalance > 0;
   const log = getLog();
 
-  if (!log.positionOpen) {
+  if (!log?.positionOpen) {
     Logger.error('No position currently open, skipping sell order');
   } else if (!hasBalance) {
     Logger.error('Insufficient WETH balance');

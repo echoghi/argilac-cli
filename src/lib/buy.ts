@@ -20,7 +20,7 @@ export async function buy(price: string) {
   const hasBalance = formattedBalance > CurrentConfig.strategy.min;
   const log = getLog();
 
-  if (log.positionOpen) {
+  if (log?.positionOpen) {
     Logger.error('Position already open, skipping buy order');
   } else if (!hasBalance) {
     Logger.error('Insufficient USDC balance');

@@ -26,7 +26,11 @@ interface Error {
  */
 
 export function getLog(): Log {
-  let log;
+  let log = {
+    positionOpen: false,
+    usdcBalance: 0,
+    wethBalance: 0
+  };
 
   try {
     const logJSON = fs.readFileSync('./logs/log.json', 'utf-8');
