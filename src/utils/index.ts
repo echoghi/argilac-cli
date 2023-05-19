@@ -1,15 +1,9 @@
 import { Token, TradeType } from '@uniswap/sdk-core';
 import { Trade } from '@uniswap/v3-sdk';
 import { BigNumber, ethers } from 'ethers';
-import {
-  ERC20_ABI,
-  MATIC_TOKEN,
-  USDC_TOKEN,
-  V3_SWAP_ROUTER_ADDRESS,
-  WETH_TOKEN
-} from '../constants';
-import { getProvider, ethersProvider, walletAddress } from '../lib/provider';
-import { CurrentConfig } from '../config';
+import { ERC20_ABI, V3_SWAP_ROUTER_ADDRESS } from '../constants';
+import { getProvider, ethersProvider, walletAddress, getConfig } from '../lib/provider';
+import { getToken } from '../lib/token';
 
 const MAX_DECIMALS = 4;
 
@@ -59,9 +53,9 @@ export function displayTrade(trade: Trade<Token, Token, TradeType>): string {
 export async function getTokenBalance(
   address: string,
   tokenAddress: string,
-  abi: any
+  abi: any,
+  provider: ethers.providers.Provider = getProvider()
 ): Promise<number> {
-  const provider = getProvider();
   const tokenContract = new ethers.Contract(tokenAddress, abi, provider);
 
   const balance = await tokenContract.balanceOf(address);
@@ -96,31 +90,53 @@ export async function formatBalance(
  * @returns A promise that resolves to an object containing the raw and formatted balances for USDC and WETH tokens.
  */
 export async function getTokenBalances() {
-  const updatedUSDCBalance = await getTokenBalance(walletAddress, USDC_TOKEN.address, ERC20_ABI);
-  const updatedWETHBalance = await getTokenBalance(walletAddress, WETH_TOKEN.address, ERC20_ABI);
+  const config = getConfig();
+  // @ts-ignore
+  const stablecoin = getToken(config?.tokens.stablecoin);
+  // @ts-ignore
+  const token = getToken(config?.tokens.token);
 
-  const formattedUSDCBalance = await formatBalance(updatedUSDCBalance, USDC_TOKEN.decimals);
-  const formattedWETHBalance = await formatBalance(updatedWETHBalance, WETH_TOKEN.decimals);
+  const updatedStableBalance = await getTokenBalance(walletAddress, stablecoin.address, ERC20_ABI);
+  const updatedTokenBalance = await getTokenBalance(walletAddress, token.address, ERC20_ABI);
+
+  const formattedStablecoinBalance = await formatBalance(updatedStableBalance, stablecoin.decimals);
+  const formattedTokenBalance = await formatBalance(updatedTokenBalance, token.decimals);
 
   return {
-    usdcBalance: updatedUSDCBalance,
-    wethBalance: updatedWETHBalance,
+    stablecoinBalance: updatedStableBalance,
+    tokenBalance: updatedTokenBalance,
 
-    formattedUSDCBalance,
-    formattedWETHBalance
+    formattedStablecoinBalance,
+    formattedTokenBalance
   };
 }
 
 /**
- * Checks if the wallet has enough balance in MATIC to cover gas fees.
+ * Checks if the wallet has enough balance in the native currency to cover gas fees.
  *
  * @returns A promise that resolves to a boolean indicating whether the wallet has enough gas money.
  */
 export async function hasGasMoney(): Promise<boolean> {
-  const maticBalance = await getTokenBalance(walletAddress, MATIC_TOKEN.address, ERC20_ABI);
+  const config = getConfig();
 
-  const formattedBalance = await formatBalance(maticBalance, MATIC_TOKEN.decimals);
-  const hasBalance = formattedBalance >= 1;
+  let hasBalance = false;
+
+  // @ts-ignore
+  if (config?.activeChain.currency === 'MATIC') {
+    // @ts-ignore
+    const nativeToken = getToken(config?.activeChain.currency);
+    const maticBalance = await getTokenBalance(walletAddress, nativeToken.address, ERC20_ABI);
+
+    const formattedBalance = await formatBalance(maticBalance, nativeToken.decimals);
+
+    hasBalance = formattedBalance >= 0.5;
+  } else {
+    // get eth balance
+    const ethBalance = await ethersProvider.getBalance(walletAddress);
+    const formattedBalance = await formatBalance(ethBalance, 18);
+
+    hasBalance = formattedBalance >= 0.03;
+  }
 
   return hasBalance;
 }
@@ -138,7 +154,11 @@ export function formatUSD(amount: number): string {
  * @returns The calculated buy amount, considering the configured strategy size.
  */
 export function getBuyAmount(balance: number): number {
-  const size = CurrentConfig.strategy.size > 1 ? 1 : CurrentConfig.strategy.size;
+  const config = getConfig();
+
+  if (!config) return 0;
+
+  const size = config.strategy.size > 1 ? 1 : config.strategy.size;
 
   return balance * size;
 }
@@ -195,4 +215,17 @@ export async function sendEntireEthBalance(
   const txReceipt = await wallet.provider.waitForTransaction(txResponse.hash);
 
   return txReceipt;
+}
+
+/**
+ * Generates a random hash
+ */
+export function generateRandomHash() {
+  // Generate a random byte array of length 32
+  const randomBytes = ethers.utils.randomBytes(32);
+
+  // Create a hash using the keccak256 function
+  const randomHash = ethers.utils.keccak256(randomBytes);
+
+  return randomHash;
 }

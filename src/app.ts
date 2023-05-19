@@ -26,12 +26,21 @@ app.get('/', (req, res) => {
  * // Request body format:
  * {
  *   "type": "BUY" | "SELL",
- *   "price": "123.45"
+ *   "price": "123.45",
+ *   "apiKey": "1234567890"
  * }
  */
 app.post('/trade', (req, res) => {
   const type = req?.body?.type;
   const price = req?.body?.price;
+  const apiKey = req.body.apiKey;
+
+  // Check if the API key is valid
+  if (apiKey !== process.env.API_KEY) {
+    res.status(403).json({ success: false, message: 'Forbidden' });
+    Logger.error('Invalid API key');
+    return;
+  }
 
   lolcatjs.fromString(`Received trade signal: ${type} at ${price}`);
 

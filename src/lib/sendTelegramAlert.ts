@@ -1,4 +1,5 @@
 import Logger from './logger';
+import { getConfig } from './provider';
 
 require('dotenv').config();
 
@@ -10,8 +11,14 @@ require('dotenv').config();
  */
 export default async function sendTelegramAlert(msg: string) {
   const { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } = process.env;
+  const config = getConfig();
 
-  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID || !config?.logs.telegram) {
+    Logger.info(
+      'Telegram bot token or chat ID not set in environment, or Telegram alerts are disabled in config. Skipping Telegram alert.'
+    );
+    return;
+  }
 
   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 

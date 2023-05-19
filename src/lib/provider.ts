@@ -1,16 +1,80 @@
 import { ethers, BigNumber, providers, Wallet } from 'ethers';
 import { BaseProvider } from '@ethersproject/providers';
 import Web3 from 'web3';
-import { CurrentConfig } from '../config';
+import fs from 'fs';
+
+import Logger from './logger';
 
 require('dotenv').config();
 
+export interface Config {
+  exchange: string;
+  activeChain: {
+    name: string;
+    rpc: string;
+    explorer: string;
+    displayName: string;
+    currency: string;
+    id: number;
+  };
+  tokens: {
+    stablecoin: string;
+    amountIn: number;
+    token: string;
+  };
+  strategy: {
+    size: number;
+    slippage: number;
+    min: number;
+    max: boolean;
+  };
+  logs: {
+    telegram: boolean;
+  };
+}
+
+/**
+ * Reads config.json
+ * @returns {config} user config
+ */
+export function getConfig(): Config | undefined {
+  let config;
+
+  try {
+    const configJSON = fs.readFileSync('./src/config/config.json', 'utf-8');
+    config = JSON.parse(configJSON);
+  } catch (e) {
+    Logger.error('Error reading config.json');
+  }
+
+  return config;
+}
+
+/**
+ * Reads chainData.json
+ * @returns {chainData}
+ */
+export function getChainData(): any {
+  let data;
+
+  try {
+    const configJSON = fs.readFileSync('./src/config/chainData.json', 'utf-8');
+    data = JSON.parse(configJSON);
+  } catch (e) {
+    Logger.error('Error reading chainData.json');
+  }
+
+  return data;
+}
+
+const config = getConfig();
+
 const wallet = createWallet();
 
-const mainnetProvider = new ethers.providers.JsonRpcProvider(CurrentConfig.rpc.testnet);
+const mainnetProvider = new ethers.providers.JsonRpcProvider(config?.activeChain.rpc);
 
 // @ts-ignore
-export const web3 = new Web3(new Web3.providers.HttpProvider(CurrentConfig.rpc.testnet));
+export const web3 = new Web3(new Web3.providers.HttpProvider(config?.activeChain.rpc));
 
 export const ethersProvider = wallet.provider;
 
@@ -26,7 +90,7 @@ export const walletAddress = wallet.address;
 export function createWallet(): ethers.Wallet {
   // @ts-ignore
   const wallet = Wallet.fromMnemonic(process.env.MNEMONIC);
-  const provider = new ethers.providers.JsonRpcProvider(CurrentConfig.rpc.testnet);
+  const provider = new ethers.providers.JsonRpcProvider(config?.activeChain.rpc);
 
   return new ethers.Wallet(wallet.privateKey, provider);
 }
@@ -47,6 +111,11 @@ export enum TransactionState {
   Sent = 'Sent'
 }
 
+export interface TransactionInfo {
+  state: TransactionState;
+  hash?: string;
+}
+
 /**
  * Sends a transaction and returns the transaction state.
  *
@@ -57,7 +126,7 @@ export enum TransactionState {
 
 export async function sendTransaction(
   transaction: ethers.providers.TransactionRequest
-): Promise<TransactionState> {
+): Promise<TransactionInfo> {
   if (transaction.value) {
     transaction.value = BigNumber.from(transaction.value);
   }
@@ -75,16 +144,20 @@ export async function sendTransaction(
 
 async function sendTransactionViaWallet(
   transaction: ethers.providers.TransactionRequest
-): Promise<TransactionState> {
+): Promise<TransactionInfo> {
   if (transaction.value) {
     transaction.value = BigNumber.from(transaction.value);
   }
+  let res: TransactionInfo = {
+    state: TransactionState.Failed
+  };
+
   const txRes = await wallet.sendTransaction(transaction);
 
   let receipt = null;
   const provider = ethersProvider;
   if (!provider) {
-    return TransactionState.Failed;
+    return res;
   }
 
   while (receipt === null) {
@@ -102,9 +175,8 @@ async function sendTransactionViaWallet(
   }
 
   // Transaction was successful if status === 1
-  if (receipt) {
-    return TransactionState.Sent;
-  } else {
-    return TransactionState.Failed;
-  }
+  res.state = receipt ? TransactionState.Sent : TransactionState.Failed;
+  res.hash = txRes.hash;
+
+  return res;
 }

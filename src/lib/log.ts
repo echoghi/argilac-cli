@@ -1,20 +1,34 @@
 import fs from 'fs';
 
 import Logger from './logger';
+import { generateRandomHash } from '../utils';
 
 interface Log {
   positionOpen: boolean;
-  usdcBalance: number;
-  wethBalance: number;
+  stablecoinBalance: number;
+  tokenBalance: number;
   lastTrade?: string;
   lastTradeTime?: string;
   lastTradePrice?: string;
   PNL?: number;
 }
 
+interface Trade {
+  key: string;
+  type: string;
+  price: string;
+  date: string;
+  in: string;
+  out: string;
+  link: string;
+  chain: string | undefined;
+}
+
 interface Error {
+  key?: string;
   type: string;
   message: string;
+  chain: string | undefined;
   time?: string;
 }
 
@@ -28,8 +42,8 @@ interface Error {
 export function getLog(): Log {
   let log = {
     positionOpen: false,
-    usdcBalance: 0,
-    wethBalance: 0
+    stablecoinBalance: 0,
+    tokenBalance: 0
   };
 
   try {
@@ -43,6 +57,26 @@ export function getLog(): Log {
 }
 
 /**
+ * Reads and returns the contents of the trades.json file.
+ *
+ * @returns {Trades} An object containing the trade data.
+ *
+ */
+
+export function getTrades(): Trade[] {
+  let trades = [];
+
+  try {
+    const logJSON = fs.readFileSync('./logs/trades.json', 'utf-8');
+    trades = JSON.parse(logJSON);
+  } catch (e) {
+    Logger.error('Error reading trades.json');
+  }
+
+  return trades;
+}
+
+/**
  * Saves the provided log data to the log.json file.
  *
  * @param {Log} newLog - An object containing the log data to be saved.
@@ -53,6 +87,23 @@ export function saveLog(newLog: Log) {
     fs.writeFileSync(`./logs/log.json`, JSON.stringify(newLog, null, 2));
   } catch (e) {
     Logger.error('Error saving log.json');
+  }
+}
+
+/**
+ * Saves the provided trade data to the trades.json file.
+ *
+ * @param {Trade} newTrade - An object containing the trade data to be saved.
+ *
+ */
+export function saveTrade(newTrade: Trade) {
+  try {
+    const trades = getTrades();
+    trades.unshift(newTrade);
+
+    fs.writeFileSync(`./logs/trades.json`, JSON.stringify(trades, null, 2));
+  } catch (e) {
+    Logger.error('Error saving trades.json');
   }
 }
 
@@ -80,9 +131,10 @@ export function getErrorLog(): Error[] {
 export function trackError(error: Error) {
   try {
     const errors = getErrorLog();
-    errors.push({
+    errors.unshift({
+      ...error,
       time: new Date().toLocaleString(),
-      ...error
+      key: generateRandomHash()
     });
 
     fs.writeFileSync(`./logs/error-log.json`, JSON.stringify(errors, null, 2));

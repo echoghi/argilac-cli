@@ -13,7 +13,9 @@ import {
   sendTransaction,
   TransactionState,
   getProvider,
-  walletAddress
+  walletAddress,
+  TransactionInfo,
+  getConfig
 } from './provider';
 import {
   MAX_FEE_PER_GAS,
@@ -31,7 +33,8 @@ export async function generateRoute(
   tokenOut: Token,
   amountIn: number
 ): Promise<SwapRoute | null> {
-  let route;
+  let route = null;
+  const config = getConfig();
 
   try {
     const router = new AlphaRouter({
@@ -55,12 +58,13 @@ export async function generateRoute(
       TradeType.EXACT_INPUT,
       options
     );
-  } catch (e) {
+  } catch (e: any) {
     Logger.error('Failed to generate route for swap');
 
     trackError({
       type: 'GEN_ROUTE',
-      message: e.message
+      message: e.message,
+      chain: config?.activeChain.displayName
     });
   }
 
@@ -71,9 +75,12 @@ export async function executeRoute(
   route: SwapRoute,
   tokenIn: Token,
   tradeAmount: number
-): Promise<TransactionState> {
+): Promise<TransactionInfo> {
+  const config = getConfig();
   const provider = getProvider();
-  let res;
+  let res: TransactionInfo = {
+    state: TransactionState.Failed
+  };
 
   if (!walletAddress || !provider) {
     throw new Error('Cannot execute a trade without a connected wallet');
@@ -83,8 +90,8 @@ export async function executeRoute(
   const tokenApproval = await getTokenTransferApproval(tokenIn, tradeAmount);
 
   // Fail if transfer approvals do not go through
-  if (tokenApproval !== TransactionState.Sent) {
-    return TransactionState.Failed;
+  if (tokenApproval.state !== TransactionState.Sent) {
+    return res;
   }
 
   try {
@@ -96,12 +103,13 @@ export async function executeRoute(
       maxFeePerGas: MAX_FEE_PER_GAS,
       maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS
     });
-  } catch (e) {
+  } catch (e: any) {
     Logger.error('Failed to execute route for swap');
 
     trackError({
       type: 'EXEC_ROUTE',
-      message: e.message
+      message: e.message,
+      chain: config?.activeChain.displayName
     });
   }
 
@@ -111,12 +119,18 @@ export async function executeRoute(
 export async function getTokenTransferApproval(
   token: Token,
   tradeAmount?: number
-): Promise<TransactionState> {
+): Promise<TransactionInfo> {
+  const config = getConfig();
   const provider = getProvider();
   const address = walletAddress;
+
+  let res: TransactionInfo = {
+    state: TransactionState.Failed
+  };
+
   if (!provider || !address) {
     Logger.error('No Provider Found');
-    return TransactionState.Failed;
+    return res;
   }
 
   try {
@@ -125,7 +139,8 @@ export async function getTokenTransferApproval(
 
     // If the approved amount is greater than the trade size, we don't need to approve again
     if (approvedAmount >= tradeSize) {
-      return TransactionState.Sent;
+      res.state = TransactionState.Sent;
+      return res;
     } else {
       const tokenContract = new ethers.Contract(token.address, ERC20_ABI, provider);
 
@@ -142,14 +157,15 @@ export async function getTokenTransferApproval(
         from: address
       });
     }
-  } catch (e) {
+  } catch (e: any) {
     Logger.error('Failed to get token approval for swap');
 
     trackError({
       type: 'TOKEN_APPROVAL',
-      message: e.message
+      message: e.message,
+      chain: config?.activeChain.displayName
     });
 
-    return TransactionState.Failed;
+    return res;
   }
 }

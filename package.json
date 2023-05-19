@@ -1,5 +1,5 @@
 {
-  "name": "argilac",
+  "name": "argilac-cli",
   "description": "A crypto trading bot",
   "version": "1.0.0",
   "main": "src/app.ts",
@@ -23,17 +23,18 @@
   },
   "scripts": {
     "server": "esno ./src/app.ts",
-    "ngrok": "ngrok http 80"
+    "ngrok": "ngrok http 80",
+    "apiKey": "esno ./src/lib/genApiKey.ts"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/echoghi/argilac.git"
+    "url": "git+https://github.com/echoghi/argilac-cli.git"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/echoghi/argilac/issues"
+    "url": "https://github.com/echoghi/argilac-cli/issues"
   },
-  "homepage": "https://github.com/echoghi/argilac#readme"
+  "homepage": "https://github.com/echoghi/argilac-cli#readme"
 }

@@ -1,0 +1,24 @@
+{
+  "activeChain": {
+    "name": "POLYGON_MUMBAI",
+    "rpc": "https://polygon-mumbai.g.alchemy.com/v2/ALCHEMY_ID",
+    "explorer": "https://mumbai.polygonscan.com/",
+    "id": 80001,
+    "currency": "MATIC",
+    "displayName": "Polygon Mumbai"
+  },
+  "exchange": "UNISWAP",
+  "tokens": {
+    "stablecoin": "USDC",
+    "token": "WETH"
+  },
+  "strategy": {
+    "size": 0.25,
+    "slippage": 0.5,
+    "min": 50,
+    "max": false
+  },
+  "logs": {
+    "telegram": false
+  }
+}

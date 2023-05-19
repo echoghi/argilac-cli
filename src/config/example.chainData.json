@@ -1,0 +1,110 @@
+{
+  "ETH_MAINNET": {
+    "ID": 1,
+    "SYMBOL": "ETH",
+    "DISPLAY_NAME": "Ethereum",
+    "EXPLORER": "https://etherscan.io/",
+    "RPC": "https://eth-mainnet.g.alchemy.com/v2/ALCHEMY_ID",
+    "TOKENS": {
+      "WETH": {
+        "CONTRACT": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "DECIMALS": 18,
+        "SYMBOL": "WETH",
+        "NAME": "Wrapped Ether"
+      },
+      "USDC": {
+        "CONTRACT": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "DECIMALS": 6,
+        "SYMBOL": "USDC",
+        "NAME": "USD//C"
+      },
+      "MATIC": {
+        "CONTRACT": "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
+        "DECIMALS": 18,
+        "SYMBOL": "MATIC",
+        "NAME": "Matic"
+      }
+    }
+  },
+  "POLYGON_MAINNET": {
+    "ID": 137,
+    "SYMBOL": "MATIC",
+    "DISPLAY_NAME": "Polygon",
+    "EXPLORER": "https://polygonscan.com/",
+    "RPC": "https://polygon-mainnet.g.alchemy.com/v2/ALCHEMY_ID",
+    "TOKENS": {
+      "WETH": {
+        "CONTRACT": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+        "DECIMALS": 18,
+        "SYMBOL": "WETH",
+        "NAME": "Wrapped Ether"
+      },
+      "USDC": {
+        "CONTRACT": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+        "DECIMALS": 6,
+        "SYMBOL": "USDC",
+        "NAME": "USD//C"
+      },
+      "MATIC": {
+        "CONTRACT": "0x0000000000000000000000000000000000001010",
+        "DECIMALS": 18,
+        "SYMBOL": "MATIC",
+        "NAME": "Matic"
+      }
+    }
+  },
+  "POLYGON_MUMBAI": {
+    "ID": 80001,
+    "SYMBOL": "MATIC",
+    "DISPLAY_NAME": "Polygon Mumbai",
+    "EXPLORER": "https://mumbai.polygonscan.com/",
+    "RPC": "https://polygon-mumbai.g.alchemy.com/v2/ALCHEMY_ID",
+    "TOKENS": {
+      "WETH": {
+        "CONTRACT": "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
+        "DECIMALS": 18,
+        "SYMBOL": "WETH",
+        "NAME": "Wrapped Ether"
+      },
+      "USDC": {
+        "CONTRACT": "0xE097d6B3100777DC31B34dC2c58fB524C2e76921",
+        "DECIMALS": 6,
+        "SYMBOL": "USDC",
+        "NAME": "USD//C"
+      },
+      "MATIC": {
+        "CONTRACT": "0x0000000000000000000000000000000000001010",
+        "DECIMALS": 18,
+        "SYMBOL": "MATIC",
+        "NAME": "Matic"
+      }
+    }
+  },
+  "ETH_GOERLI": {
+    "ID": 5,
+    "SYMBOL": "ETH",
+    "DISPLAY_NAME": "Ethereum Goerli",
+    "EXPLORER": "https://goerli.etherscan.io/",
+    "RPC": "https://eth-goerli.g.alchemy.com/v2/ALCHEMY_ID",
+    "TOKENS": {
+      "WETH": {
+        "CONTRACT": "0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6",
+        "DECIMALS": 18,
+        "SYMBOL": "WETH",
+        "NAME": "Wrapped Ether"
+      },
+      "USDC": {
+        "CONTRACT": "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
+        "DECIMALS": 6,
+        "SYMBOL": "USDC",
+        "NAME": "USD//C"
+      },
+      "MATIC": {
+        "CONTRACT": "0xA108830A23A9a054FfF4470a8e6292da0886A4D4",
+        "DECIMALS": 18,
+        "SYMBOL": "MATIC",
+        "NAME": "Matic"
+      }
+    }
+  }
+}

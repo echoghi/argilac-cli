@@ -1,10 +1,10 @@
 import IUniswapV3PoolABI from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json';
-import { computePoolAddress } from '@uniswap/v3-sdk';
+import { FeeAmount, computePoolAddress } from '@uniswap/v3-sdk';
 import { ethers } from 'ethers';
 
-import { CurrentConfig } from '../config';
 import { POOL_FACTORY_CONTRACT_ADDRESS } from '../constants';
-import { getProvider } from './provider';
+import { getConfig, getProvider } from './provider';
+import { getToken } from './token';
 
 interface PoolInfo {
   token0: string;
@@ -24,6 +24,12 @@ interface PoolInfo {
  */
 
 export async function getPoolInfo(): Promise<PoolInfo> {
+  const config = getConfig();
+  // @ts-ignore
+  const tokenA = getToken(config.tokens.in.symbol);
+  // @ts-ignore
+  const tokenB = getToken(config.tokens.out.symbol);
+
   const provider = getProvider();
   if (!provider) {
     throw new Error('No provider');
@@ -31,9 +37,9 @@ export async function getPoolInfo(): Promise<PoolInfo> {
 
   const currentPoolAddress = computePoolAddress({
     factoryAddress: POOL_FACTORY_CONTRACT_ADDRESS,
-    tokenA: CurrentConfig.tokens.in,
-    tokenB: CurrentConfig.tokens.out,
-    fee: CurrentConfig.tokens.poolFee
+    tokenA,
+    tokenB,
+    fee: FeeAmount.MEDIUM
   });
 
   const poolContract = new ethers.Contract(currentPoolAddress, IUniswapV3PoolABI.abi, provider);

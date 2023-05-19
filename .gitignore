@@ -6,3 +6,5 @@ node_modules
 .vscode
 logs/*
 !logs/.gitkeep
+src/config/config.json
+src/config/chainData.json
