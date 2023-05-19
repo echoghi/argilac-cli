@@ -1,0 +1,16 @@
+//@version=5
+strategy("BBP", overlay=true, currency=currency.NONE, initial_capital = 3000, default_qty_type = strategy.percent_of_equity, default_qty_value = 100)
+
+lengthInput = input.int(13, title="Length")
+bullPower = high - ta.ema(close, lengthInput)
+bearPower = low - ta.ema(close, lengthInput)
+
+bbpower = bullPower + bearPower
+
+plot(bbpower, title="BBPower")
+
+// Long entry condition
+long_entry = ta.crossunder(bbpower, -20)
+
+// Short entry condition
+short_entry = ta.crossover(bbpower, 50)

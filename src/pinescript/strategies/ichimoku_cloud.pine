@@ -1,0 +1,56 @@
+//@version=5
+strategy("Ichimoku Cloud", overlay=true, currency=currency.NONE, initial_capital = 3000, default_qty_type = strategy.percent_of_equity, default_qty_value = 100)
+
+conversionPeriods = input.int(9, minval=1, title="Conversion Line Length")
+basePeriods = input.int(26, minval=1, title="Base Line Length")
+laggingSpan2Periods = input.int(52, minval=1, title="Leading Span B Length")
+displacement = input.int(26, minval=1, title="Lagging Span")
+donchian(len) => math.avg(ta.lowest(len), ta.highest(len))
+conversionLine = donchian(conversionPeriods)
+baseLine = donchian(basePeriods)
+leadLine1 = math.avg(conversionLine, baseLine)
+leadLine2 = donchian(laggingSpan2Periods)
+plot(conversionLine, color=#2962FF, title="Conversion Line")
+plot(baseLine, color=#B71C1C, title="Base Line")
+plot(close, offset = -displacement + 1, color=#43A047, title="Lagging Span")
+p1 = plot(leadLine1, offset = displacement - 1, color=#A5D6A7,
+	 title="Leading Span A")
+p2 = plot(leadLine2, offset = displacement - 1, color=#EF9A9A,
+	 title="Leading Span B")
+plot(leadLine1 > leadLine2 ? leadLine1 : leadLine2, offset = displacement - 1, title = "Kumo Cloud Upper Line", display = display.none) 
+plot(leadLine1 < leadLine2 ? leadLine1 : leadLine2, offset = displacement - 1, title = "Kumo Cloud Lower Line", display = display.none) 
+fill(p1, p2, color = leadLine1 > leadLine2 ? color.rgb(67, 160, 71, 90) : color.rgb(244, 67, 54, 90))
+
+// Bollinger Band Inputs
+length = input.int(34, "Length")
+mult = input.float(2.0, "Multiplier")
+
+// Bollinger Band calculations
+basis = ta.sma(close, length)
+dev = ta.stdev(close, length)
+dev2 = mult * dev
+upper_band = basis + dev2
+lower_band = basis - dev2
+
+// Long entry condition
+buy_entry_bollinger = ta.crossunder(close, lower_band)
+
+// Exit conditions
+buy_exit_bollinger = ta.crossunder(close, basis)
+
+// Long entry condition
+buy_entry = buy_entry_bollinger
+
+// Exit conditions
+buy_exit = ta.crossover(close, leadLine2)
+
+// Plot Trades
+plotshape(buy_entry, 'Buy', shape.labelup, location.belowbar, color=color.green, size=size.small, offset=0)
+plotshape(buy_exit, 'Sell', shape.labeldown, location.abovebar,color=color.red, size=size.small, offset=0)
+
+// Strategy entries and exits
+if (buy_entry)
+    strategy.entry("Long", strategy.long)
+
+if (buy_exit)
+    strategy.close("Long")
